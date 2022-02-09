@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:cse_450/assignment_02/list.dart';
 import 'package:cse_450/counter_two.dart';
 import 'package:cse_450/profile_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(const MyApp());
@@ -57,6 +60,8 @@ class _MyHomePageState extends State<MyHomePage> {
   bool isTextFieldVisible = false;
   bool isLoading = false;
 
+  List<User> _users = [];
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -95,6 +100,19 @@ class _MyHomePageState extends State<MyHomePage> {
                 // horizontal).
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
+                  if (isLoading)
+                    const CircularProgressIndicator()
+                  else
+                    Expanded(
+                      child: ListView.builder(
+                          itemCount: _users.length,
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                              title: Text(_users[index].name),
+                              subtitle: Text(_users[index].email),
+                            );
+                          }),
+                    ),
                   const Text(
                     'You have pushed the button this many times:',
                   ),
@@ -145,25 +163,55 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          var profile = Profile(name: "waleed", email: "@gmail");
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => CounterTwo(
-                counter: _counter,
-                onCounterUpdated: (value) {
-                  _counter = value;
-                  setState(() {});
-                },
-              ),
-            ),
-          );
+        onPressed: () async {
+          isLoading = true;
+          setState(() {});
+          await _fetchUsers();
+          isLoading = false;
+          setState(() {});
+          // var profile = Profile(name: "waleed", email: "@gmail");
+          // Navigator.of(context).push(
+          //   MaterialPageRoute(
+          //     builder: (context) => CounterTwo(
+          //       counter: _counter,
+          //       onCounterUpdated: (value) {
+          //         _counter = value;
+          //         setState(() {});
+          //       },
+          //     ),
+          //   ),
+          // );
         },
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
+
+  Future _fetchUsers() async {
+    var url = Uri.parse('https://jsonplaceholder.typicode.com/users');
+    var response = await http.get(url);
+    // print('Response status: ${response.statusCode}');
+    // print('Response body: ${response.body}');
+
+    final hello = jsonDecode(response.body) as List;
+    var userName = hello.first['name'];
+
+    var users = hello.map((e) => User(name: e['name'], email: e['email'])).toList();
+    _users = users;
+    setState(() {});
+    // for (var element in users) {
+    //   print(element.name);
+    //   print(element.email);
+    // }}
+  }
+}
+
+class User {
+  final String name;
+  final String email;
+
+  User({required this.name, required this.email});
 }
 
 class Profile {
