@@ -1,13 +1,10 @@
+import 'package:cse_450/provider/counter_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class CounterTwo extends StatefulWidget {
-  final Function(int) onCounterUpdated;
-  final int counter;
-
   const CounterTwo({
     Key? key,
-    required this.counter,
-    required this.onCounterUpdated,
   }) : super(key: key);
 
   @override
@@ -15,14 +12,6 @@ class CounterTwo extends StatefulWidget {
 }
 
 class _CounterTwoState extends State<CounterTwo> {
-  int myCounter = 0;
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    myCounter = widget.counter;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,12 +20,9 @@ class _CounterTwoState extends State<CounterTwo> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(myCounter.toString()),
             ElevatedButton(
                 onPressed: () {
-                  myCounter++;
-                  setState(() {});
-                  widget.onCounterUpdated(myCounter);
+                  context.read<CounterProvider>().increment();
                 },
                 child: Text('Reassign counter')),
             Hello(
@@ -60,7 +46,7 @@ class Hello extends StatelessWidget {
       children: [
         InkWell(
           onTap: onTap,
-          child: Text('Hello'),
+          child: Text(context.watch<CounterProvider>().count.toString()),
         ),
         Text('Google'),
         Text('Facebook'),

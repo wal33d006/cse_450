@@ -1,13 +1,22 @@
 import 'dart:convert';
 
 import 'package:cse_450/assignment_02/list.dart';
+import 'package:cse_450/assignment_03/dish_list.dart';
 import 'package:cse_450/counter_two.dart';
 import 'package:cse_450/profile_screen.dart';
+import 'package:cse_450/provider/counter_provider.dart';
+import 'package:cse_450/provider/provider_main.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => CounterProvider(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -30,7 +39,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blueGrey,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const DishListPage(),
     );
   }
 }
