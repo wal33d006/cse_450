@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "698373106971",
+    "project_id": "iba-demo-3b2fb",
+    "storage_bucket": "iba-demo-3b2fb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:698373106971:android:5652f13e73bdd0c099f7be",
+        "android_client_info": {
+          "package_name": "com.example.cse_450"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "698373106971-dtrkjrf7aitsnqqkitmfoe9pfn361h4r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyArLzZtLqEjGAm7KOuNYcWD7Ez_E1xg_o4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "698373106971-dtrkjrf7aitsnqqkitmfoe9pfn361h4r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -2,7 +2,10 @@ import 'dart:convert';
 
 import 'package:cse_450/assignment_02/list.dart';
 import 'package:cse_450/assignment_03/dish_list.dart';
+import 'package:cse_450/assignment_04/list_provider.dart';
+import 'package:cse_450/assignment_04/task_list.dart';
 import 'package:cse_450/counter_two.dart';
+import 'package:cse_450/null_safety/null_safety_page.dart';
 import 'package:cse_450/profile_screen.dart';
 import 'package:cse_450/provider/counter_provider.dart';
 import 'package:cse_450/provider/provider_main.dart';
@@ -12,8 +15,11 @@ import 'package:provider/provider.dart';
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => CounterProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ListProvider()),
+        ChangeNotifierProvider(create: (_) => CounterProvider()),
+      ],
       child: const MyApp(),
     ),
   );
@@ -39,7 +45,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blueGrey,
       ),
-      home: const DishListPage(),
+      home: const TasksListPage(),
     );
   }
 }
