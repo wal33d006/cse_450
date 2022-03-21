@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cse_450/assignment_02/list.dart';
 import 'package:cse_450/assignment_03/dish_list.dart';
 import 'package:cse_450/assignment_04/list_provider.dart';
@@ -9,11 +10,14 @@ import 'package:cse_450/null_safety/null_safety_page.dart';
 import 'package:cse_450/profile_screen.dart';
 import 'package:cse_450/provider/counter_provider.dart';
 import 'package:cse_450/provider/provider_main.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(
     MultiProvider(
       providers: [
@@ -45,7 +49,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blueGrey,
       ),
-      home: const TasksListPage(),
+      home: const MyHomePage(title: 'title'),
     );
   }
 }
@@ -76,6 +80,13 @@ class _MyHomePageState extends State<MyHomePage> {
   bool isLoading = false;
 
   List<User> _users = [];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getUsers();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -179,11 +190,12 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          isLoading = true;
-          setState(() {});
-          await _fetchUsers();
-          isLoading = false;
-          setState(() {});
+          // isLoading = true;
+          // setState(() {});
+          // await _fetchUsers();
+          // isLoading = false;
+          // setState(() {});
+          addUser();
           // var profile = Profile(name: "waleed", email: "@gmail");
           // Navigator.of(context).push(
           //   MaterialPageRoute(
@@ -220,6 +232,28 @@ class _MyHomePageState extends State<MyHomePage> {
     //   print(element.email);
     // }}
   }
+
+  Future<void> addUser() async {
+    // Call the user's CollectionReference to add a new user
+    CollectionReference users = FirebaseFirestore.instance.collection('users');
+    final user = User(name: 'Waleed', email: 'waleed@gmail.com');
+    users
+        .add(user.toJson())
+        .then((value) => print("User Added"))
+        .catchError((error) => print("Failed to add user: $error"));
+  }
+
+  void getUsers() {
+    isLoading = true;
+    setState(() {});
+    FirebaseFirestore.instance.collection('users').get().then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        _users.add(User.fromJson(doc.data() as Map<String, dynamic>));
+      });
+      isLoading = false;
+      setState(() {});
+    });
+  }
 }
 
 class User {
@@ -227,6 +261,19 @@ class User {
   final String email;
 
   User({required this.name, required this.email});
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = {};
+    data['name'] = name;
+    data['company'] = email;
+
+    return data;
+  }
+
+  static User fromJson(Map<String, dynamic> json) => User(
+        name: json['full_name'],
+        email: json['company'],
+      );
 }
 
 class Profile {
