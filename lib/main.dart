@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cse_450/animations/animation_home.dart';
 import 'package:cse_450/assignment_02/list.dart';
 import 'package:cse_450/assignment_03/dish_list.dart';
 import 'package:cse_450/assignment_04/list_provider.dart';
@@ -16,8 +17,8 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  // WidgetsFlutterBinding.ensureInitialized();
+  // await Firebase.initializeApp();
   runApp(
     MultiProvider(
       providers: [
@@ -49,7 +50,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blueGrey,
       ),
-      home: const MyHomePage(title: 'title'),
+      home: const AnimationHomePage(),
     );
   }
 }
@@ -85,7 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getUsers();
+    // getUsers();
   }
 
   @override
