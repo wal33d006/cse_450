@@ -8,7 +8,7 @@ class AnimationHomePage extends StatefulWidget {
 }
 
 class _AnimationHomePageState extends State<AnimationHomePage> with SingleTickerProviderStateMixin {
-  late Animation<int> animation;
+  late Animation<double> animation;
   late AnimationController controller;
 
   double height = 100;
@@ -22,38 +22,23 @@ class _AnimationHomePageState extends State<AnimationHomePage> with SingleTicker
       vsync: this,
     );
 
-    // animation = Tween<double>(begin: 50, end: 300).animate(controller);
-
-    final Animation<double> curve =
-    CurvedAnimation(parent: controller, curve: Curves.elasticInOut);
-    animation = IntTween(begin: 50, end: 255).animate(curve);
-    animation.addListener(() {
-      print(animation.value);
-      setState(() {});
-    });
-
-    animation.addStatusListener((status) {
-      if(status == AnimationStatus.completed) {
-        controller.reverse();
-      }
-      if(status == AnimationStatus.dismissed) {
-        controller.forward();
-      }
-    });
-
-    // controller.forward();
-    // super.initState();
+    initAnimation();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: SizedBox(
-          child: const FlutterLogo(),
-          height: animation.value.toDouble(),
-          width: animation.value.toDouble(),
-        ),
+      body: Column(
+        children: [
+          // Center(
+          //   child: SizedBox(
+          //     child: const FlutterLogo(),
+          //     height: animation.value.toDouble(),
+          //     width: animation.value.toDouble(),
+          //   ),
+          // ),
+          Center(child: AnimatedLogo(animation: animation)),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -61,6 +46,29 @@ class _AnimationHomePageState extends State<AnimationHomePage> with SingleTicker
             controller.forward();
           });
         },
+      ),
+    );
+  }
+
+  void initAnimation() async {
+    animation = Tween<double>(begin: 0, end: 300).animate(controller);
+    controller.forward();
+    await Future.delayed(const Duration(seconds: 2));
+  }
+}
+
+class AnimatedLogo extends AnimatedWidget {
+  const AnimatedLogo({Key? key, required Animation<double> animation}) : super(key: key, listenable: animation);
+
+  @override
+  Widget build(BuildContext context) {
+    final animation = listenable as Animation<double>;
+    return Center(
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 10),
+        height: animation.value,
+        width: animation.value,
+        child: const FlutterLogo(),
       ),
     );
   }
