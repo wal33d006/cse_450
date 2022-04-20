@@ -3,23 +3,27 @@ import 'dart:convert';
 import 'package:cse_450/architecture/entities/user.dart';
 import 'package:cse_450/architecture/models/user_model.dart';
 import 'package:cse_450/architecture/network_layer/network_call.dart';
-
-
+import 'package:get_it/get_it.dart';
 
 class MainProvider {
   int counter = 0;
   List<User> users = [];
 
+  NetworkCall networkCall = GetIt.I<NetworkCall>();
+
   void increment() {
     counter++;
   }
 
-  Future<List<User>> getUsers() async {
+  Future<List<User>> getProviderUsers() async {
     // Firebase API call
 
-    var response = NetworkCall.get('https://jsonplaceholder.typicode.com/users');
+    var response = await networkCall.getUsers();
 
-    var list = jsonDecode(response.body) as List;
+    var tasks = await networkCall.getTasks();
+
+
+    var list = jsonDecode(response) as List;
 
     final userList = list.map((e) => UserModel.fromJson(e as Map<String, dynamic>)).toList();
 

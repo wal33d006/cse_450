@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cse_450/animations/animation_home.dart';
+import 'package:cse_450/architecture/network_layer/network_call.dart';
 import 'package:cse_450/assignment_02/list.dart';
 import 'package:cse_450/assignment_03/dish_list.dart';
 import 'package:cse_450/assignment_04/list_provider.dart';
@@ -15,6 +16,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'package:get_it/get_it.dart';
 
 void main() async {
   // WidgetsFlutterBinding.ensureInitialized();
@@ -87,6 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // TODO: implement initState
     super.initState();
     // getUsers();
+    initDependencies();
   }
 
   @override
@@ -255,6 +258,10 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {});
     });
   }
+}
+
+void initDependencies() {
+  GetIt.instance.registerSingleton<NetworkCall>(HttpNetworkCall());
 }
 
 class User {
