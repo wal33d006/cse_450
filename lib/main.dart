@@ -13,14 +13,36 @@ import 'package:cse_450/profile_screen.dart';
 import 'package:cse_450/provider/counter_provider.dart';
 import 'package:cse_450/provider/provider_main.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:get_it/get_it.dart';
 
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // If you're going to use other Firebase services in the background, such as Firestore,
+  // make sure you call `initializeApp` before using other Firebase services.
+  await Firebase.initializeApp();
+
+  print("Handling a background message: ${message.messageId}");
+}
+
 void main() async {
-  // WidgetsFlutterBinding.ensureInitialized();
-  // await Firebase.initializeApp();
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    print('Got a message whilst in the foreground!');
+    print('Message data: ${message.data}');
+
+    if (message.notification != null) {
+      print('Message also contained a notification: ${message.notification}');
+    }
+  });
+
+  await FirebaseMessaging.instance.subscribeToTopic('topic');
+
   runApp(
     MultiProvider(
       providers: [
@@ -52,7 +74,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blueGrey,
       ),
-      home: const AnimationHomePage(),
+      home: const MyHomePage(title: 'title'),
     );
   }
 }
@@ -89,6 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // TODO: implement initState
     super.initState();
     // getUsers();
+    getSample();
     initDependencies();
   }
 
@@ -258,6 +281,20 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {});
     });
   }
+
+  final List<Main> _mainList = [];
+
+  void getSample() {
+    isLoading = true;
+    setState(() {});
+    FirebaseFirestore.instance.collection('sample').get().then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        _mainList.add(Main.fromJson(doc.data() as Map<String, dynamic>));
+      });
+      isLoading = false;
+      setState(() {});
+    });
+  }
 }
 
 void initDependencies() {
@@ -292,4 +329,55 @@ class Profile {
     required this.name,
     required this.email,
   });
+}
+
+class Main {
+  final String email;
+  final String name;
+  final List<Routine> routines;
+
+  Main({
+    required this.email,
+    required this.name,
+    required this.routines,
+  });
+
+  static Main fromJson(Map<String, dynamic> json) {
+    return Main(
+      email: json['email'],
+      name: json['userName'],
+      routines: (json['Routines'] as List).map((e) => Routine.fromJson(e as Map<String, dynamic>)).toList(),
+    );
+  }
+}
+
+class Routine {
+  final String routineName;
+  final int numberOfProducts;
+  final List<RoutineProduct> routineProducts;
+
+  Routine({
+    required this.numberOfProducts,
+    required this.routineName,
+    required this.routineProducts,
+  });
+
+  static Routine fromJson(Map<String, dynamic> json) {
+    return Routine(
+      numberOfProducts: json['NumberOfProducts'],
+      routineName: json['RoutineName'],
+      routineProducts:
+          (json['RoutineProducts'] as List).map((e) => RoutineProduct.fromJson(e as Map<String, dynamic>)).toList(),
+    );
+  }
+}
+
+class RoutineProduct {
+  final String category;
+
+  RoutineProduct({required this.category});
+
+  static RoutineProduct fromJson(Map<String, dynamic> json) {
+    return RoutineProduct(category: json['Category']);
+  }
 }
